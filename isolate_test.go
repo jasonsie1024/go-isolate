@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 	os.WriteFile(sandbox.Path+"/box/test.py", []byte("print(sum(map(int, input().split())))"), 0664)
 	cmd := sandbox.Run("/usr/bin/python3", []string{"test.py"},
 		TimeLimit(1), MemLimit(1024*16),
-		Stdout("stdout.txt"),
+		Stdout("stdout.txt"), Metafile(sandbox.Path+"/meta"),
 	)
 
 	stdinPipe, err := cmd.StdinPipe()
@@ -71,6 +71,13 @@ func TestRun(t *testing.T) {
 		t.Error("output incorrect")
 		return
 	}
+
+	meta, err := os.ReadFile(sandbox.Path + "/meta")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(string(meta))
 
 	t.Log("success")
 }

@@ -37,6 +37,9 @@ func (s *Sandbox) Run(program string, arguments []string, options ...WithOption)
 	}
 
 	args := []string{"--box-id", s.Id}
+	if s.ControlGroup {
+		args = append(args, "--cg")
+	}
 	args = append(args, s.Options.BuildArguments()...)
 	args = append(args, "--run")
 	args = append(args, "--", program)

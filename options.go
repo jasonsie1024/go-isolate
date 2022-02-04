@@ -8,6 +8,8 @@ type Options struct {
 	ProcessLimit                                    int
 	Metafile, Stdin, Stdout, Stderr                 string
 	StderrToStdOut, ShareNet, InheritFds            bool
+	CGMemLimit                                      int
+	NoCGTiming                                      bool
 }
 
 func (o *Options) BuildArguments() []string {
@@ -56,6 +58,14 @@ func (o *Options) BuildArguments() []string {
 	}
 	if o.InheritFds {
 		args = append(args, "--inherit_fds")
+	}
+
+	if o.CGMemLimit != 0 {
+		args = append(args, "--cg-mem", fmt.Sprint(o.CGMemLimit))
+	}
+
+	if o.NoCGTiming {
+		args = append(args, "--no-cg-timing")
 	}
 
 	return args
@@ -150,5 +160,17 @@ func ShareNet(ShareNet bool) WithOption {
 func InheritFds(InheritFds bool) WithOption {
 	return func(s *Sandbox) {
 		s.Options.InheritFds = InheritFds
+	}
+}
+
+func CGMemLimit(CGMemLimit int) WithOption {
+	return func(s *Sandbox) {
+		s.Options.CGMemLimit = CGMemLimit
+	}
+}
+
+func NoCGTiming(NoCGTiming bool) WithOption {
+	return func(s *Sandbox) {
+		s.Options.NoCGTiming = NoCGTiming
 	}
 }
