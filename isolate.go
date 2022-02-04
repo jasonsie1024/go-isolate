@@ -26,26 +26,25 @@ func (s *Sandbox) CleanUp() error {
 		args = append(args, "--cg")
 	}
 
+	args = append(args, "--cleanup")
+
 	return exec.Command("isolate", args...).Run()
 }
 
-func (s *Sandbox) Run(program string, arguments []string, options ...WithOption) (*exec.Cmd, error) {
+func (s *Sandbox) Run(program string, arguments []string, options ...WithOption) *exec.Cmd {
 	for _, wo := range options {
 		wo(s)
 	}
 
 	args := []string{"--box-id", s.Id}
 	args = append(args, s.Options.BuildArguments()...)
+	args = append(args, "--run")
 	args = append(args, "--", program)
 	args = append(args, arguments...)
 
 	command := exec.Command("isolate", args...)
-	err := command.Start()
-	if err != nil {
-		return nil, err
-	}
 
-	return command, nil
+	return command
 }
 
 // Create new sandbox with specified Id and whether to enable Control Group.
